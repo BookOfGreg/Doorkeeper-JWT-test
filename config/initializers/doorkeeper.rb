@@ -151,12 +151,21 @@ Doorkeeper::JWT.configure do
   # { token: "RANDOM-TOKEN" }
   token_payload do |opts|
     user = User.find(opts[:resource_owner_id])
+    issued_at = DateTime.now.utc
+    expires_at = (issued_at + 20.minutes)
+    issuer = Rails.application.class.parent.to_s.underscore
 
+    # https://auth0.com/docs/tokens/id-token#id-token-payload
     {
-      iss: Rails.application.class.parent.to_s.underscore,
-      iat: Time.now.utc.to_i,
+      # https://tools.ietf.org/html/rfc7519#section-4.1
+      iss: issuer,
+      iat: issued_at.to_i,
+      exp: expires_at.to_i,
       jti: SecureRandom.uuid,
+      sub: "#{issuer}|#{user.id}",
 
+      # Custom payload
+      expires_at: expires_at.iso8601,
       user: {
         id: user.id,
         email: user.email

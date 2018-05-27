@@ -2,17 +2,22 @@ class UsersController < ApiController
   before_action :doorkeeper_authorize!
   before_action :set_user, only: [:show, :update, :destroy]
 
-  # GET /users.json
+  # GET /api/v1/users.json
   def index
     render json: User.all
   end
 
-  # GET /users/1.json
+  # GET /api/v1/profile.json
+  def profile
+    render json: current_user
+  end
+
+  # GET /api/v1/users/1.json
   def show
     render json: @user
   end
 
-  # POST /users.json
+  # POST /api/v1/users.json
   def create
     @user = User.new(user_params)
 
@@ -23,7 +28,7 @@ class UsersController < ApiController
     end
   end
 
-  # PATCH/PUT /users/1.json
+  # PATCH/PUT /api/v1/users/1.json
   def update
     if @user.update(user_params)
       render json: @user, status: :ok
@@ -32,7 +37,7 @@ class UsersController < ApiController
     end
   end
 
-  # DELETE /users/1.json
+  # DELETE /api/v1/users/1.json
   def destroy
     @user.destroy
     head :no_content
